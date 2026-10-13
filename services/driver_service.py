@@ -14,10 +14,10 @@ class DriverService:
     async def get_by_id(self, driver_id):
         driver = await self.repository.get_by_id(driver_id)
         if not driver:
-            raise NotFoundException("Driver not found")
+            raise NotFoundException("Driver id not found")
         return driver
 
     async def delete(self, driver_id):
         if not await self.repository.delete(driver_id):
-            raise NotFoundException("Driver not found")
+            raise NotFoundException("Driver id not found")
         return {"message": "Driver deleted"}

@@ -70,7 +70,7 @@ class CollectionService:
     async def get_by_id(self, collection_id):
         collection = await self.repository.get_by_id(collection_id)
         if not collection:
-            raise NotFoundException("Collection not found")
+            raise NotFoundException("Collection id not found")
         return collection
 
     async def patch(self, collection_id, changes):
@@ -88,14 +88,14 @@ class CollectionService:
         }
         data.update(changes)
         if not await self.driver_repository.get_by_id(data["driver_id"]):
-            raise NotFoundException("Driver not found")
+            raise NotFoundException("Driver id not found")
         return await self.repository.patch(
             collection_id, changes, self.calculate_totals(data)
         )
 
     async def delete(self, collection_id):
         if not await self.repository.delete(collection_id):
-            raise NotFoundException("Collection not found")
+            raise NotFoundException("Collection id not found")
         return {"message": "Collection deleted"}
 
     async def save_upload_file(self, file: UploadFile, collection_id: int):
