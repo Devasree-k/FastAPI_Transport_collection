@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status
-from schema.driver_schema import DriverCreate, DriverResponse
+from schemas.driver_schema import DriverCreate, DriverResponse
 from services.driver_service import DriverService
 
 router = APIRouter(prefix="/drivers", tags=["Drivers"])

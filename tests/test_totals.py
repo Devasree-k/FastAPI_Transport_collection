@@ -15,3 +15,5 @@ def test_calculate_totals():
     assert totals.total_collection == Decimal("2100.00")
     assert totals.total_expense == Decimal("600.00")
     assert totals.net_collection == Decimal("1500.00")
+
+    

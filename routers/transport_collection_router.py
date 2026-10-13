@@ -1,6 +1,8 @@
 from fastapi import APIRouter, File, UploadFile, status, Query
-from schema.transport_collection_schema import CollectionCreate, CollectionPatch, CollectionResponse
+from schemas.transport_collection_schema import CollectionCreate, CollectionPatch, CollectionResponse
 from services.transport_collection_service import CollectionService
+from exceptions.transport_collection_exception import BadRequestException
+
 
 router = APIRouter(prefix="/collections", tags=["Transport Collections"])
 service = CollectionService()
@@ -8,11 +10,6 @@ service = CollectionService()
 @router.post("/", response_model=CollectionResponse, status_code=status.HTTP_201_CREATED)
 async def create_collection(data: CollectionCreate):
     return await service.create(data.model_dump())
-
-# @router.get("/", response_model=list[CollectionResponse])
-# async def get_collections():
-#     return await service.get_all()
-
 
 @router.get("/")
 async def get_collections(
@@ -30,7 +27,6 @@ async def get_collection(collection_id: int):
 async def patch_collection(collection_id: int, data: CollectionPatch):
     changes = data.model_dump(exclude_unset=True)
     if not changes:
-        from exceptions.transport_collection_exception import BadRequestException
         raise BadRequestException("Send at least one field to update")
     return await service.patch(collection_id, changes)
 

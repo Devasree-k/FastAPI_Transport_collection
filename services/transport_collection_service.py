@@ -32,7 +32,9 @@ class CollectionService:
         total_collection = data["morning_collection"] + data["evening_collection"]
         total_expense = data["fuel_expense"] + data["other_expense"]
         return CollectionTotals(
-            total_trips, total_collection, total_expense,
+            total_trips, 
+            total_collection, 
+            total_expense,
             total_collection - total_expense
         )
 
@@ -73,7 +75,6 @@ class CollectionService:
 
     async def patch(self, collection_id, changes):
         current = await self.get_by_id(collection_id)
-        # Merge current database values with only the fields sent by the user.
         data = {
             "driver_id": current["driver_id"],
             "vehicle_number": current["vehicle_number"],

@@ -1,6 +1,3 @@
--- Run this file in your PostgreSQL database.
-DROP TABLE IF EXISTS transport_collections;
-DROP TABLE IF EXISTS drivers;
 
 CREATE TABLE drivers (
     driver_id SERIAL PRIMARY KEY,

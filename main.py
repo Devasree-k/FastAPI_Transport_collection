@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from exceptions.transport_collection_exception import AppException
-from router.driver_router import router as driver_router
-from router.transport_collection_router import router as collection_router
+from routers.driver_router import router as driver_router
+from routers.transport_collection_router import router as collection_router
 
 app = FastAPI(title="Transport Collection API")
 

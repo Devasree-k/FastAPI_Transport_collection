@@ -33,7 +33,6 @@ class CollectionResponse(BaseModel):
 
 
 class CollectionPatch(BaseModel):
-    # All fields are optional because PATCH changes only supplied fields.
     driver_id: int | None = Field(default=None, gt=0)
     vehicle_number: str | None = Field(default=None, min_length=5, max_length=20)
     collection_date: date | None = None
