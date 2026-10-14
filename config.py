@@ -9,3 +9,7 @@ DB_NAME = os.getenv("DB_NAME", "transport_db")
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "postgres")
 UPLOAD_FOLDER = "uploads"
+
+
+
+SESSION_SECRET = os.getenv("SESSION_SECRET")
