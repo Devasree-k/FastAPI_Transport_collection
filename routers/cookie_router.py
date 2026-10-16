@@ -1,7 +1,10 @@
 
 from fastapi import APIRouter, Cookie, Header, Request, Response
 
-router = APIRouter(prefix="/demo", tags=["Headers, Cookies and Sessions"])
+router = APIRouter(
+    prefix="/demo", 
+    tags=["Headers and Cookies"]
+    )
 
 
 # 1. HEADERS
@@ -44,31 +47,3 @@ async def delete_cookie(response: Response):
         path="/",
     )
     return {"message": "Cookie deleted"}
-
-
-# 3. SESSIONS
-@router.post("/session/last-viewed/{collection_id}")
-async def remember_collection(
-    collection_id: int,
-    request: Request,
-):
-    request.session["last_viewed_collection_id"] = collection_id
-
-    return {
-        "message": "Collection ID saved in session",
-        "collection_id": collection_id,
-    }
-
-
-@router.get("/session")
-async def read_session(request: Request):
-    return {
-        "last_viewed_collection_id":
-            request.session.get("last_viewed_collection_id")
-    }
-
-
-@router.post("/session/clear")
-async def clear_session(request: Request):
-    request.session.clear()
-    return {"message": "Session cleared"}
