@@ -1,12 +1,12 @@
 from database import get_connection
 
+# Handles database operations for transport collection records.
 class CollectionRepository:
 
+    # Save the input fields together with totals calculated by the service.
     async def create(self, data, totals):
         async with await get_connection() as connect:
-
             async with connect.cursor() as cursor:
-
                 await cursor.execute('''
                     INSERT INTO transport_collections
                         (driver_id, 
@@ -25,21 +25,28 @@ class CollectionRepository:
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     RETURNING id
                 ''', (
-                    data["driver_id"], data["vehicle_number"], data["collection_date"],
-                    data["morning_trips"], data["evening_trips"],
-                    data["morning_collection"], data["evening_collection"],
-                    data["fuel_expense"], data["other_expense"],
-                    totals.total_trips, totals.total_collection,
-                    totals.total_expense, totals.net_collection
+                    data["driver_id"], 
+                    data["vehicle_number"], 
+                    data["collection_date"],
+                    data["morning_trips"], 
+                    data["evening_trips"],
+                    data["morning_collection"], 
+                    data["evening_collection"],
+                    data["fuel_expense"], 
+                    data["other_expense"],
+                    totals.total_trips, 
+                    totals.total_collection,
+                    totals.total_expense, 
+                    totals.net_collection
                 ))
                 row = await cursor.fetchone()
 
         return await self.get_by_id(row["id"])
 
+
+    
     async def get_all(self, limit: int, offset: int):
-
         async with await get_connection() as connect:
-
             async with connect.cursor() as cursor:
 
                 await cursor.execute('''
@@ -69,9 +76,7 @@ class CollectionRepository:
 
     async def get_total_count(self):
         async with await get_connection() as connect:
-
             async with connect.cursor() as cursor:
-
                 await cursor.execute('''
                     SELECT COUNT(*) AS total FROM transport_collections ''')
                 

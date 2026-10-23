@@ -1,5 +1,5 @@
 from decimal import Decimal
-from services.transport_collection_service import CollectionService
+from FastAPI_Transport_collection.app.services.transport_collection_service import CollectionService
 
 def test_calculate_totals():
     service = CollectionService()

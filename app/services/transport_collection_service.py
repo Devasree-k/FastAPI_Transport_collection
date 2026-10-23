@@ -5,15 +5,16 @@ import aiofiles
 from fastapi import UploadFile
 
 import config
-from exceptions.transport_collection_exception import (
+from app.exceptions.transport_collection_exception import (
     BadRequestException,
     NotFoundException,
 )
-from models.totals import CollectionTotals
-from repositories.driver_repository import DriverRepository
-from repositories.transport_collection_repository import CollectionRepository
+from app.models.totals import CollectionTotals
+from app.repositories.driver_repository import DriverRepository
+from app.repositories.transport_collection_repository import CollectionRepository
 
 
+# To check for MIME file type 
 ALLOWED_REPORT_TYPES = {
     "image/jpeg": ".jpg",
     "image/png": ".png",
@@ -27,10 +28,14 @@ class CollectionService:
         self.repository = CollectionRepository()
         self.driver_repository = DriverRepository()
 
+# Calculate derived totals from the original collection values.
     def calculate_totals(self, data):
         total_trips = data["morning_trips"] + data["evening_trips"]
+
         total_collection = data["morning_collection"] + data["evening_collection"]
+
         total_expense = data["fuel_expense"] + data["other_expense"]
+
         return CollectionTotals(
             total_trips, 
             total_collection, 
@@ -48,13 +53,14 @@ class CollectionService:
 
     
     async def get_all(self, page: int = 1, limit: int = 3):
+        # Convert the requested page number into a database row offset.
         offset = (page - 1) * limit
 
         collections = await self.repository.get_all( limit, offset)
 
         total_records = await self.repository.get_total_count()
 
-        total_pages = ((total_records + limit - 1) // limit)
+        total_pages = ((total_records + limit - 1) // limit)     #to round up the value
 
         return {
             "page": page,
@@ -74,6 +80,7 @@ class CollectionService:
         return collection
 
     async def patch(self, collection_id, changes):
+        # Preserve unchanged fields when processing a partial update
         current = await self.get_by_id(collection_id)
         data = {
             "driver_id": current["driver_id"],
@@ -90,7 +97,7 @@ class CollectionService:
         if not await self.driver_repository.get_by_id(data["driver_id"]):
             raise NotFoundException("Driver id not found")
         return await self.repository.patch(
-            collection_id, changes, self.calculate_totals(data)
+            collection_id, changes, self.calculate_totals(data)    # Recalculate during update
         )
 
     async def delete(self, collection_id):
@@ -100,18 +107,20 @@ class CollectionService:
 
     async def save_upload_file(self, file: UploadFile, collection_id: int):
         extension = Path(file.filename or "").suffix.lower()
+        # Reject unsupported file types before saving the upload.
         if file.content_type not in ALLOWED_REPORT_TYPES:
             raise BadRequestException("Upload a JPG, PNG or PDF report")
 
         upload_folder = Path(config.UPLOAD_FOLDER) / str(collection_id)
         upload_folder.mkdir(parents=True, exist_ok=True)
         extension = ALLOWED_REPORT_TYPES[file.content_type]
-        file_path = upload_folder / f"{uuid4().hex}{extension}"
+        file_path = upload_folder / f"{uuid4().hex}{extension}"   # Generate a unique filename
         total_size = 0
 
         try:
             async with aiofiles.open(file_path, "wb") as output_file:
                 while True:
+                    # Read the file in chunks to avoid loading the entire upload into memory.
                     chunk = await file.read(1024 * 1024)
                     if not chunk:
                         break

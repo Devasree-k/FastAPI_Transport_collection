@@ -1,5 +1,5 @@
-from exceptions.transport_collection_exception import NotFoundException
-from repositories.driver_repository import DriverRepository
+from app.exceptions.transport_collection_exception import NotFoundException
+from app.repositories.driver_repository import DriverRepository
 
 class DriverService:
     def __init__(self):
